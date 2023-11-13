@@ -1,17 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[System.Serializable]
+public struct Chair
+{
+    public GameObject seat;
+    public bool occupied;
+}
 public class CustomerSpawner : MonoBehaviour {
-	public GameObject[] columns;
-    public bool[] occupiedColumns;
-	public float timeBetweenSpawns;
-    public float customerWaitTime;
+    public Chair[] chairs;
+    public float timeBetweenSpawns;
+    public float customerWaitTime = 9999;
+    public int dropsPerGlass = 7;
 	public bool shouldSpawn = false;
 	public bool streak;
     public PotControl pot;
     public GameObject[] teaSelections;
     public GameObject streakParticleSystem;
     public Teachievement achievements;
+    public int maxCustomers = 4;
+    private int customersBeingServed = 0;
     private int streakLength;
 	private int longestStreak;
 	private float timer;
@@ -20,11 +28,12 @@ public class CustomerSpawner : MonoBehaviour {
 	public GameObject[] customers;
 	// Use this for initialization
 	void Start () {
-		numberOfTeas = PlayerPrefs.GetInt("number of teas", 1);
-		pot.numberOfTeas = numberOfTeas;
+        numberOfTeas = customers.Length;
+//		pot.numberOfTeas = numberOfTeas;
 		for(int i = 0; i < numberOfTeas; i++) {
 			teaSelections[i].SetActive(true);
 		}
+        StartSpawning();
 	}
 	
 	// Update is called once per frame
@@ -32,14 +41,18 @@ public class CustomerSpawner : MonoBehaviour {
         if(shouldSpawn)
         {
             int peopleCounter = 0;
-            for(int i = 0; i < occupiedColumns.Length; i++)
+            for (int i = 0; i < chairs.Length; i++)
+
+//                for (int i = 0; i < occupiedColumns.Length; i++)
             {
-                if(occupiedColumns[i])
+                if(chairs[i].occupied)
                 {
                     peopleCounter++;
                 }
             }
+
             timer += Time.deltaTime;
+            
             if (timeBetweenSpawns < timer || peopleCounter == 0)
             {
                 AnotherCustomer();
@@ -57,9 +70,11 @@ public class CustomerSpawner : MonoBehaviour {
 
     }
     public void flashWarningMessage(string msg) {
+/*
         pot.badPourFx();
         pot.feedbackMessage.text = msg;
         pot.feedback.SetTrigger("show");
+*/
     }
 
     public void customerExpire()
@@ -69,13 +84,14 @@ public class CustomerSpawner : MonoBehaviour {
 
     public void Discard(int column)
     {
-        occupiedColumns[column] = false;
+        chairs[column].occupied = false;
+//        occupiedColumns[column] = false;
        // AnotherCustomer();
         timer = 0f;
     }
     public void Served(int column)
     {
-        float tip = addTip();
+        float tip = 1;//addTip();
         if (tip >= 1)
         {
             streakLength++;
@@ -87,30 +103,34 @@ public class CustomerSpawner : MonoBehaviour {
         if (streakLength > 3)    {
             streak = true;
             tip += 1f;
-            pot.poweredUpMusicSnapshot.TransitionTo(.01f);
-            pot.perfectPour(streakLength);
-            pot.GetComponent<Animator>().SetTrigger("perfect");
+//            pot.poweredUpMusicSnapshot.TransitionTo(.01f);
+//            pot.perfectPour(streakLength);
+//            pot.GetComponent<Animator>().SetTrigger("perfect");
             if (streakLength > longestStreak){
                 longestStreak = streakLength;
             }
 
         }
-        occupiedColumns[column] = false;
-        pot.cupsServed++;
-        pot.moneyMade += 1;
-        pot.moneyMade += tip;
+        chairs[column].occupied = false;
+        customersBeingServed--;
+//        occupiedColumns[column] = false;
+//        pot.cupsServed++;
+//        pot.moneyMade += 1;
+//        pot.moneyMade += tip;
         if(tip >= 1)
         {
-            pot.feedbackMessage.text = tip.ToString("$0.00 Tip!");
-            pot.feedback.SetTrigger("show");
+           // pot.feedbackMessage.text = tip.ToString("$0.00 Tip!");
+           // pot.feedback.SetTrigger("show");
 
         }
-        LevelUp();
-        pot.bonus = 0;
-        //        AnotherCustomer();
+        //LevelUp();
+        //pot.bonus = 0;
+        AnotherCustomer();
+        /*
         if (streakParticleSystem.activeSelf != streak){
             streakParticleSystem.SetActive(streak);
         }
+        */
     }
     private float addTip()
     {
@@ -149,11 +169,11 @@ public class CustomerSpawner : MonoBehaviour {
     }
 
     public void endStreak(int column) {
-        occupiedColumns[column] = false;
+        chairs[column].occupied = false;
         streak = false;
 		streakLength = 0;
-		pot.backgroundMusicSnapshot.TransitionTo(.01f);
-		pot.GetComponent<Animator>().SetTrigger("normal");
+//		pot.backgroundMusicSnapshot.TransitionTo(.01f);
+//		pot.GetComponent<Animator>().SetTrigger("normal");
 	}
 
 	void LevelUp() {
@@ -307,47 +327,55 @@ public class CustomerSpawner : MonoBehaviour {
 //		Time.timeScale = 1f;
 	}
 	public void ClearCustomers() {
-		for(int i = 0; i < columns.Length; i++) {
-			Person[] people = columns[i].GetComponentsInChildren<Person>();
-			for(int j = 0; j < people.Length; j++) {
-				Destroy(people[j].gameObject);
-			}
+
+		for(int i = 0; i < chairs.Length; i++) {
+            chairs[i].occupied = false;
+            Destroy(chairs[i].seat);
 		}
 
-	}
+        customersBeingServed = 0;
+
+    }
 
     void AnotherCustomer()
     {
-        timer = 0f;
-        int randomCustomerIndex = Random.Range(0, occupiedColumns.Length);
-        if (!occupiedColumns[randomCustomerIndex]) {
-            occupiedColumns[randomCustomerIndex] = true;
-         //SPAWN CUSTOMER
-            spawnCustomer(customers[Random.Range(0, numberOfTeas)], columns[randomCustomerIndex].transform.position, columns[randomCustomerIndex], randomCustomerIndex);
-        }
-        else
+        if(customersBeingServed < maxCustomers)
         {
-            Debug.Log("Tried occupied column");
-            AnotherCustomer();
+            timer = 0f;
+            int randomCustomerIndex = Random.Range(0, chairs.Length);
+            if (!chairs[randomCustomerIndex].occupied)
+            {
+                chairs[randomCustomerIndex].occupied = true;
+                //        if (!occupiedColumns[randomCustomerIndex]) {
+                //            occupiedColumns[randomCustomerIndex] = true;
+                //SPAWN CUSTOMER
+                spawnCustomer(customers[Random.Range(0, numberOfTeas)], chairs[randomCustomerIndex].seat.transform.position, chairs[randomCustomerIndex].seat, randomCustomerIndex);
+            }
+            else
+            {
+                Debug.Log("Tried occupied column");
+                AnotherCustomer();
+            }
+
         }
     }
 
     void GenerateRow() {
         //RESETS ENTIRE ROW, SHOULD ONLY BE USED ON FIRST GO
         Debug.Log("TIMER: " + timer);
-		for(int i = 0; i < columns.Length; i++) {
-			Person[] people = columns[i].GetComponentsInChildren<Person>();
-            occupiedColumns[i] = false;
-            for (int j = 0; j < people.Length; j++) {
-				people[j].timesUp = true;
-            }
-		}
+		for(int i = 0; i < chairs.Length; i++)
+        {
+            Person person = chairs[i].seat.GetComponentInChildren<Person>();
+            chairs[i].occupied = false;
+//            person.timesUp = true;
+        }
 		timer = 0f;
 //		served = 0;
 //		spawned = 0;
 //		bugging = false;
-        int selectedCol = Random.Range(0, columns.Length);
-        spawnCustomer(customers[Random.Range(0, numberOfTeas)], columns[selectedCol].transform.position, columns[selectedCol], selectedCol);
+        int selectedCol = Random.Range(0, chairs.Length);
+        
+        spawnCustomer(customers[Random.Range(0, numberOfTeas)], chairs[selectedCol].seat.transform.position, chairs[selectedCol].seat, selectedCol);
 //        spawned++;
 
 	}
@@ -357,7 +385,9 @@ public class CustomerSpawner : MonoBehaviour {
 		shouldSpawn = true;
 	}
 	private void spawnCustomer(GameObject go, Vector3 place, GameObject parent, int colNum) {
-        occupiedColumns[colNum] = true;
+        Debug.Log("Calling Spawn Customer...");
+        chairs[colNum].occupied = true;
+//        occupiedColumns[colNum] = true;
         if (!parent.GetComponentInChildren<Person>())
         {
             place.y -= (Camera.main.orthographicSize * 2f);
@@ -365,7 +395,9 @@ public class CustomerSpawner : MonoBehaviour {
             o.transform.parent = parent.transform;
             o.GetComponent<Person>().column = colNum;
             o.GetComponent<Person>().StartMoving(customerWaitTime);
+            customersBeingServed++;
+
         }
-	}
+    }
 
 }

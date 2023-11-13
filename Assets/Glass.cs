@@ -20,11 +20,14 @@ public class Glass : MonoBehaviour {
         CustomerSpawner spawner = transform.parent.GetComponentInParent<CustomerSpawner>();
 
         if (cc.r == c.r && cc.g == c.g && cc.b == c.b) {
-            liquid.GetComponent<SpriteRenderer>().color = new Color(c.r, c.g, c.b);
+            liquid.GetComponent<SpriteRenderer>().color = new Color(c.r, c.g, c.b, 1);
             drops++;
-            spawner.pot.checkFlair();
+            if(spawner.pot)
+            {
+                spawner.pot.checkFlair();
+            }
 
-            if (drops == 7)
+            if (drops == spawner.dropsPerGlass)
             {
                 if (gameObject.GetComponentInParent<AudioSource>())
                 {
@@ -48,8 +51,10 @@ public class Glass : MonoBehaviour {
             }
             else
             {
+                /*
                 spawner.pot.wrongTea();
-            }
+            */
+                }
 
         }
 

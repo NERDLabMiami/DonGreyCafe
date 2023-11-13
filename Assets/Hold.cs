@@ -19,13 +19,15 @@ public class Hold : MonoBehaviour {
 	}
 
 	void begin() {
+		/*
 		for(int i = 0; i < loops.Length; i++) {
 			loops[i].Play();
 		}
+		
 		pot.Begin();
 		pot.backgroundMusicSnapshot.TransitionTo(.01f);
 		pot.spawner.StartSpawning();
 		gameObject.SetActive(false);
-
+		*/
 	}
 }

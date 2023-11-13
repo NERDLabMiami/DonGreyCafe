@@ -19,7 +19,7 @@ public class Person : MonoBehaviour {
 		color.a = 255;
 		shirt.color = color;
 		origin = transform.position;
-        timer = 0f;
+        timer = 9999f;
 	}
 
     public void StartMoving(float timeRemaining) {
@@ -32,11 +32,19 @@ public class Person : MonoBehaviour {
 
         if (!buggedOut) {
 			Glass glass = GetComponentInChildren<Glass>();
-			if(glass.drops < 7) {
+			//TODO: Variable number of drops / game setting
+			if(glass.drops < transform.parent.GetComponentInParent<CustomerSpawner>().dropsPerGlass) {
 				gameObject.GetComponent<Animator>().SetTrigger("bugging");
 			}
 			buggedOut = true;
-            GetComponentInParent<CustomerSpawner>().pot.alarm();
+			if (GetComponentInParent<CustomerSpawner>().pot)
+            {
+				GetComponentInParent<CustomerSpawner>().pot.alarm();
+            }
+			else
+            {
+				Debug.Log("NO POT SET.");
+            }
         }
 	}
 
@@ -58,7 +66,9 @@ public class Person : MonoBehaviour {
         }
         if(timeLeft < timer && !timesUp)
         {
-            timesUp = true;
+//            timesUp = true;
+			//TODO: STREAKS VS NO DROPS ALLOWED
+			/*
             if(GetComponentInParent<CustomerSpawner>().streak)
             {
                 GetComponentInParent<CustomerSpawner>().flashWarningMessage("POUR FASTER!");
@@ -68,17 +78,20 @@ public class Person : MonoBehaviour {
             {
                 GetComponentInParent<CustomerSpawner>().customerExpire();
             }
+			*/
         }
 
         if (spawning) {
 			if(pauseBeforeSpawning < Time.time) {
-
+				
 				transform.position = Vector2.MoveTowards(new Vector2(transform.position.x, transform.position.y),transform.parent.transform.position, 20 * Time.deltaTime);
+				/*
 				GameObject glass = GetComponentInChildren<Glass>().gameObject;
 
 				if(glass.transform.localScale.x >= 2.5f) {
 					glass.transform.localScale *= .99f;
 				}
+				*/
 				if(transform.position.y >= 2) {
 					spawning = false;
 				}
@@ -88,7 +101,7 @@ public class Person : MonoBehaviour {
 		if(timesUp) {
 			transform.position = Vector2.MoveTowards(new Vector2(transform.position.x, transform.position.y), origin, 10 * Time.deltaTime);
 			if(transform.position.y <= -5) {
-                GetComponentInParent<CustomerSpawner>().occupiedColumns[column] = false;
+				GetComponentInParent<CustomerSpawner>().chairs[column].occupied = false;
                 Destroy(gameObject);
 			}
 

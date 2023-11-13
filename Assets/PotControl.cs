@@ -34,7 +34,7 @@ public class PotControl : MonoBehaviour {
 	public int cupsServed = 0;
     public float moneyMade;
     public int strikes = 0;
-	public int dropsLeft = 100;
+//	public int dropsLeft = 100;
 	public float tiltSpeed = 1.5f;
 	public bool gravity = false;
     public bool playing = false;
@@ -61,6 +61,8 @@ public class PotControl : MonoBehaviour {
             bonus++;
         }
     }
+
+
     public void alarm()
     {
         GetComponent<AudioSource>().PlayOneShot(alarmFx, 2f);
@@ -86,7 +88,7 @@ public class PotControl : MonoBehaviour {
 		gameOver = false;
 		gameControl.SetActive(true);
 		hud.SetTrigger("normal");
-		dropsLeft = 105;
+//		dropsLeft = 105;
         bonus = 0;
         cupsServed = 0;
         moneyMade = 0;
@@ -264,6 +266,8 @@ public class PotControl : MonoBehaviour {
 		}
 	}
 
+
+
 	public void Pour(InputAction.CallbackContext context)
     {
 		Debug.Log("POURING!");
@@ -293,7 +297,6 @@ public class PotControl : MonoBehaviour {
 		if (transform.rotation.eulerAngles.z <= 290 && transform.rotation.eulerAngles.z  >= 200) {
 				Pour();
 		}
-
 	}
 	public void Pour() {
 		if(Time.realtimeSinceStartup - debounce > repeat) { 

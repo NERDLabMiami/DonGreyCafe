@@ -4,6 +4,7 @@ using System.Collections;
 public class Droplet : MonoBehaviour {
 	public int dropletType;
 	private float spawnTime;
+	public int maxAmount = 10;
 	// Use this for initialization
 	void Start () {
 		spawnTime = Time.time;
@@ -19,7 +20,12 @@ public class Droplet : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D coll) {
 		if(coll.gameObject.tag == "glass") {
 			Glass glass = coll.gameObject.GetComponentInParent<Glass>();
-			glass.Fill(GetComponent<SpriteRenderer>().color);
+			Debug.Log("FILLING GLASS " + glass.name + " with " + GetComponent<SpriteRenderer>().color);
+			if(GetComponent<SpriteRenderer>().color != null)
+            {
+				glass.Fill(GetComponent<SpriteRenderer>().color);
+
+			}
 			Destroy(this.gameObject);
 		}
 
@@ -27,6 +33,27 @@ public class Droplet : MonoBehaviour {
 			Destroy(this.gameObject);
 
 		}
+
+		if(coll.gameObject.tag == "kettle")
+        {
+            Debug.Log("found a kettle!");
+			
+
+            if (coll.gameObject.GetComponent<Kettle>())
+            {
+
+				if (coll.gameObject.GetComponent<Kettle>().HasRoom())
+				{
+					Debug.Log("Has room for tea");
+					coll.gameObject.GetComponent<Kettle>().AddTea();
+				}
+				else
+                {
+					Debug.Log("No room for tea!");
+                }
+			}
+			Destroy(this.gameObject);
+        }
 
 	}
 }
