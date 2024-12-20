@@ -23,7 +23,8 @@ public class Kettle : MonoBehaviour
     public float pourSpeed = 1;
     
     public GameObject spigot;
-    public GameObject[] droplet;
+    public GameObject droplet;
+    private Color[] droplets;
     private Vessel[] vessels;
 
     private int selectedDroplet = 0;
@@ -36,17 +37,24 @@ public class Kettle : MonoBehaviour
 
     private void Start()
     {
-        vessels = new Vessel[droplet.Length];
-        for(int i = 0; i < droplet.Length; i++)
+        droplets = new Color[CustomerSpawner.Instance.GetActiveCustomerColors().Length];
+        droplets = CustomerSpawner.Instance.GetActiveCustomerColors();
+        Debug.Log("FOUND " + droplets.Length + " DROPLETS");
+        if(droplets.Length > 0)
         {
-            Vessel vessel = new Vessel();
-            vessel.dropCapacity = droplet[i].GetComponent<Droplet>().maxAmount;
-            vessel.dropAmount = vessel.dropCapacity;
+            vessels = new Vessel[droplets.Length];
+            for (int i = 0; i < droplets.Length; i++)
+            {
+                Vessel vessel = new Vessel();
+                vessel.dropCapacity = 10;//droplet[i].GetComponent<Droplet>().maxAmount;
+                vessel.dropAmount = vessel.dropCapacity;
 
-            Debug.Log("MAX AMOUNT FOR " + i + " : " + droplet[i].GetComponent<Droplet>().maxAmount);
-            vessels[i] = vessel;
+                vessels[i] = vessel;
+            }
+            laneY = transform.position.y;
+
         }
-        laneY = transform.position.y;
+        ChangeDroplet();
 
     }
 
@@ -83,7 +91,9 @@ public class Kettle : MonoBehaviour
         {
             Vector3 refillPosition = transform.position;
             refillPosition.y += 5;
-            GameObject go = Instantiate(droplet[selectedDroplet], transform.parent);
+            GameObject go = Instantiate(droplet, transform.parent);
+            go.GetComponent<SpriteRenderer>().color = droplets[selectedDroplet];
+
             go.transform.position = refillPosition;
             if(vessels[selectedDroplet].dropCapacity <= vessels[selectedDroplet].dropAmount)
             {
@@ -95,7 +105,39 @@ public class Kettle : MonoBehaviour
 
 
     }
+    void OnNext(InputValue value)
+    {
+        selectedDroplet++;
+        ChangeDroplet();
+    }
 
+    void OnPrevious(InputValue value)
+    {
+
+        selectedDroplet--;
+        //   Debug.Log("SELECTED DROPLET: " + selectedDroplet);
+
+        ChangeDroplet();
+    }
+
+    void ChangeDroplet()
+    {
+        if (selectedDroplet >= droplets.Length)
+        {
+            selectedDroplet = 0;
+        }
+        if (selectedDroplet < 0)
+        {
+            selectedDroplet = droplets.Length - 1;
+        }
+
+        Color c = droplets[selectedDroplet];
+        float alpha = (float)vessels[selectedDroplet].dropAmount / (float)vessels[selectedDroplet].dropCapacity;
+        c.a = alpha;
+
+        GetComponent<SpriteRenderer>().color = c;
+
+    }
     void OnMove(InputValue value)
     {
         speedX = value.Get<Vector2>().x;
@@ -128,24 +170,25 @@ public class Kettle : MonoBehaviour
             laneY = 4;
         }
         
-
-        Debug.Log("Moving " + value.Get<Vector2>().x + " IN LANE " + laneY);
     }
 
     void OnSwap(InputValue value)
     {
-        selectedDroplet = (int)(selectedDroplet + value.Get<float>());
-        if (selectedDroplet >= droplet.Length)
+        //TODO: Fix Swapping Value
+        Debug.Log("SWAP VALUE: " + value.Get<float>());
+        selectedDroplet += (int)(value.Get<float>());
+     //   Debug.Log("SELECTED DROPLET: " + selectedDroplet);
+        if (selectedDroplet >= droplets.Length)
         {
             selectedDroplet = 0;
         }
 
         if(selectedDroplet < 0)
         {
-            selectedDroplet = droplet.Length - 1;
+            selectedDroplet = droplets.Length - 1;
         }
 
-        Color c = droplet[selectedDroplet].GetComponent<SpriteRenderer>().color;
+        Color c = droplets[selectedDroplet];//[selectedDroplet].GetComponent<SpriteRenderer>().color;
         float alpha = (float)vessels[selectedDroplet].dropAmount / (float)vessels[selectedDroplet].dropCapacity;
         c.a = alpha;
 
@@ -197,17 +240,17 @@ public class Kettle : MonoBehaviour
         {
             Vector3 pos = spigot.transform.position;
             Quaternion qua = new Quaternion(0, 0, 0, 0);
-            GameObject tea = (GameObject)Instantiate(droplet[selectedDroplet], pos, qua);
+            Color c = droplets[selectedDroplet];
+            float alpha = (float)vessels[selectedDroplet].dropAmount / (float)vessels[selectedDroplet].dropCapacity;
+            c.a = alpha + .1f;
+            GetComponent<SpriteRenderer>().color = droplets[selectedDroplet];
+            GameObject tea = (GameObject)Instantiate(droplet, pos, qua);
+            tea.GetComponent<SpriteRenderer>().color = c;
             vessels[selectedDroplet].dropAmount--;        
             if (vessels[selectedDroplet].dropAmount <= 0)
             {
                 CancelInvoke("CheckPour");
             }
-            Color c = tea.GetComponent<SpriteRenderer>().color;
-            float alpha = (float)vessels[selectedDroplet].dropAmount / (float)vessels[selectedDroplet].dropCapacity;
-            Debug.Log("ALPHA: " + alpha);
-            c.a = alpha + .1f;
-            GetComponent<SpriteRenderer>().color = c;
 
         }
     }
@@ -215,7 +258,7 @@ public class Kettle : MonoBehaviour
     public void selectTea(int tea)
     {
         selectedDroplet = tea;
-        Color c = droplet[selectedDroplet].GetComponent<SpriteRenderer>().color;
+        Color c = droplets[selectedDroplet];//.GetComponent<SpriteRenderer>().color;
         c.a = 100f;
         GetComponent<SpriteRenderer>().color = c;
     }
@@ -243,11 +286,12 @@ public class Kettle : MonoBehaviour
     public void AddTea()
     {
         vessels[selectedDroplet].dropAmount++;
-        Color c = droplet[selectedDroplet].GetComponent<SpriteRenderer>().color;
+        Color c = droplets[selectedDroplet];//.GetComponent<SpriteRenderer>().color;
         float alpha = (float)vessels[selectedDroplet].dropAmount / (float)vessels[selectedDroplet].dropCapacity;
         c.a = alpha;
         GetComponent<SpriteRenderer>().color = c;
     }
+
 
 
 }

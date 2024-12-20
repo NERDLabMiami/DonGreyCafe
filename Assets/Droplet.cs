@@ -23,6 +23,7 @@ public class Droplet : MonoBehaviour {
 			Debug.Log("FILLING GLASS " + glass.name + " with " + GetComponent<SpriteRenderer>().color);
 			if(GetComponent<SpriteRenderer>().color != null)
             {
+				Debug.Log("SPRITE COLOR: " + GetComponent<SpriteRenderer>().color);
 				glass.Fill(GetComponent<SpriteRenderer>().color);
 
 			}

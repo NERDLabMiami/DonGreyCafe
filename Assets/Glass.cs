@@ -17,17 +17,21 @@ public class Glass : MonoBehaviour {
 
 	public void Fill(Color c) {
 		Color cc = GetComponentInParent<Person>().color;
-        CustomerSpawner spawner = transform.parent.GetComponentInParent<CustomerSpawner>();
 
+
+        
+        liquid.GetComponent<SpriteRenderer>().color = c;
+        c.a = 1;
         if (cc.r == c.r && cc.g == c.g && cc.b == c.b) {
-            liquid.GetComponent<SpriteRenderer>().color = new Color(c.r, c.g, c.b, 1);
+            Debug.Log("TEA MATCHES PERSON");
+            liquid.GetComponent<SpriteRenderer>().color = c;
             drops++;
-            if(spawner.pot)
+            if(CustomerSpawner.Instance.pot)
             {
-                spawner.pot.checkFlair();
+                CustomerSpawner.Instance.pot.checkFlair();
             }
 
-            if (drops == spawner.dropsPerGlass)
+            if (drops == CustomerSpawner.Instance.dropsPerGlass)
             {
                 if (gameObject.GetComponentInParent<AudioSource>())
                 {
@@ -37,17 +41,17 @@ public class Glass : MonoBehaviour {
                 }
 
                 gameObject.GetComponentInParent<Person>().timesUp = true;
-                spawner.Served(gameObject.GetComponentInParent<Person>().column);
+                CustomerSpawner.Instance.Served(gameObject.GetComponentInParent<Person>().column);
            }
         }
         else if (!wrongtea) {
             wrongtea = true;
             gameObject.GetComponentInParent<Person>().timesUp = true;
-            if(spawner.streak)
+            if(CustomerSpawner.Instance.streak)
             {
-                spawner.flashWarningMessage("WRONG TEA!");
-                spawner.endStreak(gameObject.GetComponentInParent<Person>().column);
-                spawner.Discard(gameObject.GetComponentInParent<Person>().column);
+                CustomerSpawner.Instance.FlashWarningMessage("WRONG TEA!");
+                CustomerSpawner.Instance.EndStreak(gameObject.GetComponentInParent<Person>().column);
+                CustomerSpawner.Instance.Discard(gameObject.GetComponentInParent<Person>().column);
             }
             else
             {

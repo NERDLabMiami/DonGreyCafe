@@ -24,15 +24,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Swap",
-                    "type": "Button",
-                    "id": "a461a190-07b8-4418-9c5a-47e53c126245",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Refill",
                     "type": "Button",
                     "id": "7d07e428-4ccc-4084-a5e2-d697290f5587",
@@ -45,6 +36,24 @@
                     "name": "Join",
                     "type": "Button",
                     "id": "d831b1ae-13e8-480c-9482-ca63560974d1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Next",
+                    "type": "Button",
+                    "id": "53b28efa-efd0-4f15-a919-d968c0728894",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Previous",
+                    "type": "Button",
+                    "id": "5c36ca7a-e5bd-4b1d-bf5e-db35eb4ca339",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -110,7 +119,7 @@
                 {
                     "name": "",
                     "id": "2d81bce0-d89b-432a-92ba-b666978ead64",
-                    "path": "<Gamepad>/buttonEast",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "Gamepad;Joystick",
@@ -126,61 +135,6 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Pour",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "1D Axis",
-                    "id": "f56a1d37-3c77-41f2-a98c-550c9862e470",
-                    "path": "1DAxis",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Swap",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "negative",
-                    "id": "a7f9a481-eb57-420e-8e07-016985a215c1",
-                    "path": "<Gamepad>/leftTrigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Swap",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "daaff40a-ade2-4abc-857b-b310a06e9aed",
-                    "path": "<Gamepad>/rightTrigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Swap",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "e4c3d830-bbf0-4fde-9709-ce03efa57471",
-                    "path": "<Keyboard>/a",
-                    "interactions": "Tap",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Swap",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "87e12e7c-0ace-4e40-8157-2f6e016cc473",
-                    "path": "<Keyboard>/s",
-                    "interactions": "Tap",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Swap",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -214,6 +168,28 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Join",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "25e3e429-f1b0-4476-be19-8bd85536ab49",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Previous",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ac75a644-4cc7-410e-9a04-3dfacdcca7f2",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Next",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
